@@ -1,91 +1,110 @@
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.Random;
+import java.util.Scanner;
 
 public class L2task1_1 {
+
     public static void main(String[] args) {
-        Random rand = new Random();
-        Integer[] array = initialize_array();
-        Integer[] newArray;
+        Integer[][] array, baseArray;
         int i;
-        for (i = 0; i < array.length; i++) {
-            array[i] = rand.nextInt(498) - 192; //  -192 до +305
+        baseArray = arrayInitialize();
+        if (baseArray.length < 2) {
+            System.out.println("Масив має менше 2 рядків");
+            return;
         }
-        prn_array(array); // печать
-        int arLen = array.length - 1;
-        newArray = array.clone();
-        Arrays.sort(newArray);
-        //1. Знайти добутки трьох найменших та трьох найбільших елементів у масиві.
-        prn_array(newArray);
-        System.out.printf("Добуток 3х найменших значень: %d\n", newArray[0] * newArray[1] * newArray[2]);
-        System.out.printf("Добуток 3х найбільших значень: %d\n", newArray[arLen] * newArray[arLen - 1] * newArray[arLen - 2]);
-        //2. Визначити два мінімальних елементи у масиві, відсортувати елементи, що розташовані між мінімальними,
-        // якщо їх кількість більше 7, а їх сума більш ніж у двічі перевищує значення найбільшого у масиві
-        int startPoint = Arrays.asList(array).indexOf(newArray[0]);
-        int endPoint = Arrays.asList(array).indexOf(newArray[1]);
-        if (endPoint < startPoint) startPoint = startPoint + endPoint - (endPoint = startPoint);
-        System.out.println("startPoint " + startPoint + ' ' + "endPoint " + endPoint);
-        if (endPoint - startPoint > 8){
-            int sumBetween = 0;
-            for (i = startPoint + 1; i < endPoint; i++){ //?? int i
-                sumBetween += array[i];
-            }
-            if (sumBetween > newArray[arLen]){
-                Arrays.sort(array, startPoint + 1, endPoint);
-            }
-        }
-        prn_array(array);
-        //3. Визначити число від’ємних елементів, що розташовані перед найбільшим додатнім елементом масиву.
-        // Якщо шукане число від’ємних елементів буде дорівнювати 0, то відсортувати у спадному порядку елементи
-        // розташовані після найбільшого додатного елемента.
-        int maxIndex = Arrays.asList(array).indexOf(newArray[arLen]);
-        int negativeCount = 0;
-        for (i = 0; i < maxIndex; i++) {
-            if (array[i] < 0) negativeCount++;
-        }
-        System.out.println("maxIndex " + maxIndex + " negativeCount " + negativeCount);
-        if (negativeCount == 0) {
-            Arrays.sort(array, maxIndex + 1, arLen + 1, Collections.reverseOrder());
-        }
-        prn_array(array);
-        //4. Змінити порядок розташування елементів на обернений, потім відсортувати елементи першої половини
-        // масиву у спадному порядку, зменшити на мінімальний елемент з першої половини елементи другої половини масиву.
-        int temp;
-        for (i = 0; i < array.length/2; i++){
-            temp = array[i];
-            array[i] = array[arLen - i];
-            array[arLen-i] = temp;
-        }
-        Arrays.sort(array, 0, array.length / 2, Collections.reverseOrder());
-        for (i = array.length / 2; i < array.length; i++) {
-            array[i] -= array[array.length / 2 - 1];
-        }
-        prn_array(array);
-        //5. Знайти найбільший додатній та найменший від’ємний елементи у масиві та поміняти їх місцями.
-        newArray = array.clone();
-        Arrays.sort(newArray);
-        prn_array(newArray);
-        startPoint = Arrays.asList(array).indexOf(newArray[0]);
-        endPoint = Arrays.asList(array).indexOf(newArray[arLen]);
-        temp = array[startPoint];
-        array[startPoint] = array[endPoint];
-        array[endPoint] = temp;
-        prn_array(array);
+        prnArray(baseArray); // печать
+        //int arLen = array.length - 1; // індекс останнього елеманта масиву
+        array = baseArray.clone();
+        sumOfAverages(array);
+
+
     }
 
-    public static Integer[] initialize_array(){
-        System.out.println("Оберите спосіб ініціалізації масива:");
-        System.out.println("Введення через консоль: 1");
-        System.out.println("Зчитування із файла: 2");
-        System.out.println("Заповнення випадковими числами: 3");
-
-        Integer[] array = new Integer[50];
-        return array;
-    }
-    public static void prn_array(Integer[] array){
-        for (int i = 0; i < array.length; i++) {
-            System.out.println("Элемент " + (i) + ": " + array[i]);
+    public static void writeToFile(Integer[][] array) {
+        try (PrintStream writer = new PrintStream("arrayB.txt")) {
+            for (Integer[] row : array) {
+                for (Integer item : row) {
+                    writer.print(item + " ");
+                }
+                writer.println();
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Произошла ошибка при записи в файл: " + e.getMessage());
         }
+    }
 
+    public static void sumOfAverages(Integer[][] array) {
+        int averageSum = 0, rowAverage;
+        for (Integer[] row : array) {
+            rowAverage = 0;
+            for (Integer rowItem : row) {
+                rowAverage += rowItem;
+            }
+            rowAverage /= array[0].length;
+            System.out.println("averageSum: " + averageSum + " rowAverage " + rowAverage);
+            averageSum += rowAverage;
+        }
+        System.out.println("averageSum:" + averageSum);
+        Integer[][] bArray = array.clone();
+        for (int i = 1; i < bArray.length; i++) {
+            for (int j = 0; j < i; j++) {
+                bArray[i][j] = averageSum;
+            }
+        }
+        prnArray(bArray);
+        writeToFile(bArray);
+    }
+
+    public static Integer[][] arrayInitialize() {
+        Integer[][] initArray;
+        System.out.println("Оберіть спосіб ініціалізації масива:");
+        System.out.println("1. Консольне введення");
+        System.out.println("2. Зчитування з файлу");
+        System.out.println("3. Генерація випадкових чисел");
+        Scanner scanner = new Scanner(System.in);
+        while (!scanner.hasNextInt()) {
+            System.out.println("Введено не числове значення.");
+            scanner.next();
+        }
+        //       int t = 0;
+//        switch (t){ //(scanner.nextInt()) {
+//            case 1:
+//                scanner = new Scanner(System.in);
+//                System.out.println("Введіть масив чисел, які розділені пробілами");
+//                String line = scanner.nextLine();
+//                return Arrays.stream(line.split(" ")).map(Integer::parseInt).toArray(Integer[]::new);
+//            case 2:
+//                try (Scanner fileScanner = new Scanner(new File("1dimArray.txt"))){
+//                    List<Integer> numbersRead = new ArrayList<>();
+//                    while (fileScanner.hasNextInt()) {
+//                        numbersRead.add(fileScanner.nextInt());
+//                    }
+//                    fileScanner.close();
+//                    return numbersRead.toArray(new Integer[0]);
+//                } catch (IOException e) {
+//                    System.out.println("Помилка читання: " + e.getMessage());
+//                }
+//                break;
+//        }
+        initArray = new Integer[10][12];
+        Random rand = new Random();
+        for (int i = 0; i < initArray.length; i++) {
+            for (int j = 0; j < initArray[i].length; j++) {
+                initArray[i][j] = rand.nextInt(199) - 99; //  -99 до +99
+            }
+        }
+        return initArray;
+    }
+
+    public static void prnArray(Integer[][] array) {
+        for (Integer[] row : array) {
+            for (Integer rowItem : row) {
+                System.out.printf("%4s ", rowItem);
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 }

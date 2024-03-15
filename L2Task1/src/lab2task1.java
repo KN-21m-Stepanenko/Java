@@ -12,7 +12,7 @@ public class lab2task1 {
     public static void main(String[] args) {
         Integer[] array, newArray;
         int i;
-        array = array_initialize();
+        array = arrayInitialize();
         if (array.length < 6) {
             System.out.println("Масив має менше 6 елементів");
             return;
@@ -43,6 +43,7 @@ public class lab2task1 {
             }
         }
         prnArray(array);
+
         //3. Визначити число від’ємних елементів, що розташовані перед найбільшим додатнім елементом масиву.
         // Якщо шукане число від’ємних елементів буде дорівнювати 0, то відсортувати у спадному порядку елементи
         // розташовані після найбільшого додатного елемента.
@@ -56,6 +57,7 @@ public class lab2task1 {
             Arrays.sort(array, maxIndex + 1, arLen + 1, Collections.reverseOrder());
         }
         prnArray(array);
+
         //4. Змінити порядок розташування елементів на обернений, потім відсортувати елементи першої половини
         // масиву у спадному порядку, зменшити на мінімальний елемент з першої половини елементи другої половини масиву.
         int temp;
@@ -69,6 +71,7 @@ public class lab2task1 {
             array[i] -= array[array.length / 2 - 1];
         }
         prnArray(array);
+
         //5. Знайти найбільший додатній та найменший від’ємний елементи у масиві та поміняти їх місцями.
         newArray = array.clone();
         Arrays.sort(newArray);
@@ -81,7 +84,7 @@ public class lab2task1 {
         prnArray(array);
     }
 
-    public static Integer[] array_initialize() {
+    public static Integer[] arrayInitialize() {
         Integer[] initArray;
         System.out.println("Оберіть спосіб ініціалізації масива:");
         System.out.println("1. Консольне введення");
@@ -97,8 +100,7 @@ public class lab2task1 {
                 scanner = new Scanner(System.in);
                 System.out.println("Введіть масив чисел, які розділені пробілами");
                 String line = scanner.nextLine();
-                initArray = Arrays.stream(line.split(" ")).map(Integer::parseInt).toArray(Integer[]::new);
-                return initArray;
+                return Arrays.stream(line.split(" ")).map(Integer::parseInt).toArray(Integer[]::new);
             case 2:
                 try (Scanner fileScanner = new Scanner(new File("1dimArray.txt"))){
                     List<Integer> numbersRead = new ArrayList<>();
