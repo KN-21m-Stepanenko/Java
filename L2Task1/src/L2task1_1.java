@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.Random;
@@ -8,20 +7,51 @@ public class L2task1_1 {
 
     public static void main(String[] args) {
         Integer[][] array, baseArray;
-        int i;
         baseArray = arrayInitialize();
         if (baseArray.length < 2) {
             System.out.println("Масив має менше 2 рядків");
             return;
         }
         prnArray(baseArray); // печать
-        //int arLen = array.length - 1; // індекс останнього елеманта масиву
-        array = baseArray.clone();
-        sumOfAverages(array);
-
-
+        sumOfAverages(baseArray);
+        swapColumns(baseArray);
+        prnArray(baseArray); // печать
     }
 
+    public static Integer[][] cloneBMatrix(Integer[][] array) {
+        Integer[][] copy = new Integer[array.length][array[0].length];
+        for (int i = 0; i < copy.length; i++) {
+            for (int j = 0; j < copy[1].length; j++) copy[i][j] = array[i][j];
+        }
+        return copy;
+    }
+
+    public static void swapColumns(Integer[][] array) {
+        int minPositive = Integer.MAX_VALUE, maxNegative = Integer.MIN_VALUE;
+        for (Integer[] row : array) {
+            for (Integer rowItem : row) {
+                if (rowItem > 0) {
+                    if (rowItem < minPositive) minPositive = rowItem;
+                    continue;
+                }
+                if (rowItem < 0) {
+                    if (rowItem > maxNegative) maxNegative = rowItem;
+                }
+            }
+        }
+        double result = (double) minPositive / maxNegative;
+        System.out.println("Bідношення мінімального з додатних елементів до максимального з від’ємних: " + result);
+        Integer[][] newBArray = cloneBMatrix(array);
+        for (Integer[] row : newBArray) {
+            for (int i = 0; i < row.length / 2; i++) {
+                Integer temp = row[i];
+                row[i] = row[row.length - i - 1];
+                row[row.length - i - 1] = temp;
+            }
+        }
+        prnArray(newBArray);
+        writeToFile(newBArray);
+    }
     public static void writeToFile(Integer[][] array) {
         try (PrintStream writer = new PrintStream("arrayB.txt")) {
             for (Integer[] row : array) {
@@ -31,7 +61,7 @@ public class L2task1_1 {
                 writer.println();
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Произошла ошибка при записи в файл: " + e.getMessage());
+            System.out.println("Помилка запису у файл: " + e.getMessage());
         }
     }
 
@@ -47,14 +77,14 @@ public class L2task1_1 {
             averageSum += rowAverage;
         }
         System.out.println("averageSum:" + averageSum);
-        Integer[][] bArray = array.clone();
-        for (int i = 1; i < bArray.length; i++) {
+        Integer[][] newBArray = cloneBMatrix(array);
+        for (int i = 1; i < newBArray.length; i++) {
             for (int j = 0; j < i; j++) {
-                bArray[i][j] = averageSum;
+                newBArray[i][j] = averageSum;
             }
         }
-        prnArray(bArray);
-        writeToFile(bArray);
+        prnArray(newBArray);
+        writeToFile(newBArray);
     }
 
     public static Integer[][] arrayInitialize() {
