@@ -13,6 +13,10 @@ public class lab2task1 {
         Integer[] array, newArray;
         int i;
         array = array_initialize();
+        if (array.length < 6) {
+            System.out.println("Масив має менше 6 елементів");
+            return;
+        }
         prnArray(array); // печать
         int arLen = array.length - 1; // індекс останнього елеманта масиву
         newArray = array.clone();
@@ -78,7 +82,7 @@ public class lab2task1 {
     }
 
     public static Integer[] array_initialize() {
-        // File file = new File("1dimArray.txt"); 
+        Integer[] initArray;
         System.out.println("Оберіть спосіб ініціалізації масива:");
         System.out.println("1. Консольне введення");
         System.out.println("2. Зчитування з файлу");
@@ -90,35 +94,36 @@ public class lab2task1 {
         }
         switch (scanner.nextInt()) {
             case 1:
-                
-                break;
+                scanner = new Scanner(System.in);
+                System.out.println("Введіть масив чисел, які розділені пробілами");
+                String line = scanner.nextLine();
+                initArray = Arrays.stream(line.split(" ")).map(Integer::parseInt).toArray(Integer[]::new);
+                return initArray;
             case 2:
-                try {
-                    Scanner fileScanner = new Scanner(new File("1dimArray.txt"));
+                try (Scanner fileScanner = new Scanner(new File("1dimArray.txt"))){
                     List<Integer> numbersRead = new ArrayList<>();
                     while (fileScanner.hasNextInt()) {
                         numbersRead.add(fileScanner.nextInt());
                     }
                     fileScanner.close();
-//                    Integer[] array = numbersRead.toArray(new Integer[0]);
                     return numbersRead.toArray(new Integer[0]);
                 } catch (IOException e) {
                     System.out.println("Помилка читання: " + e.getMessage());  
                 }
                 break;
         }
-        scanner.close();
-        Integer[] array = new Integer[50];
+        initArray = new Integer[50];
         Random rand = new Random();
-        for (int i = 0; i < array.length; i++) {
-            array[i] = rand.nextInt(498) - 192; //  -192 до +305
+        for (int i = 0; i < initArray.length; i++) {
+            initArray[i] = rand.nextInt(498) - 192; //  -192 до +305
         }
-        return array;
+        return initArray;
     }
 
     public static void prnArray(Integer[] array){
         for (int i = 0; i < array.length; i++) {
             System.out.println("Элемент " + (i) + ": " + array[i]);
         }
+        System.out.println();
     }
 }
