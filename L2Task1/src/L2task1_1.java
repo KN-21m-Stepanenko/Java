@@ -1,5 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class L2task1_1 {
         sumOfAverages(baseArray);
         swapColumns(baseArray);
         prnArray(baseArray); // печать
+        symmetryColumns(baseArray);
     }
 
     public static Integer[][] cloneBMatrix(Integer[][] array) {
@@ -24,6 +26,27 @@ public class L2task1_1 {
             for (int j = 0; j < copy[1].length; j++) copy[i][j] = array[i][j];
         }
         return copy;
+    }
+    
+    public static void symmetryColumns(Integer[][] array) {
+        int zeroElements = 0, nonZeroElements = 0;
+        for (Integer[] row : array) {
+            for (Integer rowItem : row) {
+                if (rowItem == 0) {
+                    zeroElements += 1;
+                    continue;
+                }
+                nonZeroElements += 1;
+            }
+        }
+        float result = (float) zeroElements / nonZeroElements;
+        if (nonZeroElements != 0) System.out.println("Відношення нульових елементів до ненульових: " + result);
+        Integer[][] newBArray = cloneBMatrix(array);
+        for (Integer[] row : newBArray) {
+            for (int i = 0; i < row.length / 2; i++) row[row.length - i - 1] = row[i];
+        }
+        prnArray(newBArray);
+        writeToFile(newBArray);
     }
 
     public static void swapColumns(Integer[][] array) {
@@ -94,18 +117,18 @@ public class L2task1_1 {
         System.out.println("2. Зчитування з файлу");
         System.out.println("3. Генерація випадкових чисел");
         Scanner scanner = new Scanner(System.in);
-        while (!scanner.hasNextInt()) {
-            System.out.println("Введено не числове значення.");
-            scanner.next();
-        }
+         while (!scanner.hasNextInt()) {
+             System.out.println("Введено не числове значення.");
+             scanner.next();
+         }
         //       int t = 0;
-//        switch (t){ //(scanner.nextInt()) {
-//            case 1:
-//                scanner = new Scanner(System.in);
-//                System.out.println("Введіть масив чисел, які розділені пробілами");
-//                String line = scanner.nextLine();
-//                return Arrays.stream(line.split(" ")).map(Integer::parseInt).toArray(Integer[]::new);
-//            case 2:
+        switch (scanner.nextInt()) {
+            case 1:
+                scanner = new Scanner(System.in);
+                System.out.println("Введіть масив чисел, які розділені пробілами");
+                String line = scanner.nextLine();
+                return Arrays.stream(line.split(" ")).map(Integer::parseInt).toArray(Integer[]::new);
+            case 2:
 //                try (Scanner fileScanner = new Scanner(new File("1dimArray.txt"))){
 //                    List<Integer> numbersRead = new ArrayList<>();
 //                    while (fileScanner.hasNextInt()) {
@@ -116,8 +139,8 @@ public class L2task1_1 {
 //                } catch (IOException e) {
 //                    System.out.println("Помилка читання: " + e.getMessage());
 //                }
-//                break;
-//        }
+                break;
+        }
         initArray = new Integer[10][12];
         Random rand = new Random();
         for (int i = 0; i < initArray.length; i++) {
